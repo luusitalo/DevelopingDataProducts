@@ -1,0 +1,82 @@
+Visual illustration of Bayesian updating of probability of success
+========================================================
+author: L. Uusitalo
+date: 16 September 2015
+
+Motivation    
+========================================================
+
+This interactive Shiny app visualizes Bayesian updating of the probability of success, 
+as we gather more and more observations of successes and failures.
+
+You can think of think as a coin toss, with the difference that we don't know what are the respective probabilities of heads and tails. We flip the coin several times, recording the results, and
+these observations give us a better basis to estimate the probability of heads.
+
+Read more about Bayesian statistics here: https://en.wikipedia.org/wiki/Bayesian_inference.
+
+Updating code modified from http://bayesianbiologist.com/2011/09/10/visualizing-bayesian-updating/
+
+Example of the updating
+========================================================
+
+
+The estimate before seeing any data, i.e. the *prior probability*, is uniform between 0 and 1. 
+
+This figure shows the prior and the updated estimate 
+(the *posterior*) after having observed 11 successes and 7 failures.
+***
+```{r echo = FALSE}
+curve(dbeta(x,1,1), xlim=c(0,1), ylim=c(0,5), xlab='Probability of success',ylab='Probability Density',lty=2)
+legend('topright',legend=c('Prior','Posterior'),lty=c(2,1),col=c('black','red'))
+               
+totSucc <<- 11
+totFail <<- 7
+                
+#posterior
+curve(dbeta(x,totSucc+1,totFail+1),add=TRUE, col='red', lwd=1.5)
+text(0.2,4, paste("Total number of \nsuccesses is ", totSucc, "\nand failures ", totFail))
+                
+```
+
+Understanding knowledge accumulation
+========================================================
+
+- **Mimics real life situation**: 
+   - Add new observations as you get them
+   - Watch your best estimate of the success probability develop
+
+
+- The latest posterior (*using all the accumulated data*) in red
+- all the previous posteriors shown in black
+
+--> Easy to see how the estimate changes and improves as data accumulates
+
+
+
+This is how it could look like after 9 batches of data
+========================================================
+
+
+```{r, echo=FALSE}
+
+curve(dbeta(x,1,1), xlim=c(0,1), ylim=c(0,12), xlab='Probability of success',ylab='Probability Density',lty=2)
+legend('topright',legend=c('Prior','Old Posteriors','Latest Posterior'),lty=c(2,1,1),col=c('black','black','red'))
+               
+totSucc<-102
+totFail<-95
+s<-c(5,12,25,38,55,69,77,98)
+f<-c(4,7,22,30,52,58,79,82)
+                
+#previous posteriors
+if (length(s)>1){
+        for (i in 1:length(s)){
+                curve(dbeta(x,s[i]+1,f[i]+1),add=TRUE)
+        }
+}
+        
+#latest posterior
+curve(dbeta(x,totSucc+1,totFail+1),add=TRUE, col='red', lwd=1.5)
+text(0.2,10, paste("Total number of \nsuccesses is ", totSucc, "\nand failures ", totFail))
+                
+```
+
